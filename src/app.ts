@@ -4,6 +4,7 @@ import userRouter from './app/modules/users/userRoutes'
 import globalErrorHandler from './app/utils/globalErrorHandling'
 import notFound from './app/utils/notFount'
 import studenRoutes from './app/modules/students/studentRoutes'
+import academicSemesterRoute from './app/modules/academicSemester/academicSemesterRoute'
 const app: Application = express()
 
 // middlewares 
@@ -13,6 +14,7 @@ app.use(cors())
 // create route 
 app.use('/api/users', userRouter)
 app.use('/api/students', studenRoutes)
+app.use('/api/academicSemester', academicSemesterRoute)
 
 
 app.get('/', (req: Request, res: Response) => {
