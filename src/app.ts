@@ -1,10 +1,12 @@
-import express, { Application, Request, Response, NextFunction } from 'express'
+import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
 import userRouter from './app/modules/users/userRoutes'
 import globalErrorHandler from './app/utils/globalErrorHandling'
 import notFound from './app/utils/notFount'
 import studenRoutes from './app/modules/students/studentRoutes'
 import academicSemesterRoute from './app/modules/academicSemester/academicSemesterRoute'
+import academicFacultyRoute from './app/modules/academicFaculty/academicFacultyRoutes'
+import AcademicDepartmentRoutes from './app/modules/academicDep/academicDepRoutes'
 const app: Application = express()
 
 // middlewares 
@@ -15,6 +17,8 @@ app.use(cors())
 app.use('/api/users', userRouter)
 app.use('/api/students', studenRoutes)
 app.use('/api/academicSemester', academicSemesterRoute)
+app.use('/api/academicFaculty', academicFacultyRoute)
+app.use('/api/academicDepartment', AcademicDepartmentRoutes)
 
 
 app.get('/', (req: Request, res: Response) => {
@@ -27,8 +31,6 @@ app.use(globalErrorHandler);
 
 // Catch-all for unmatched routes
 app.use(notFound);
-
-
 
 
 export default app

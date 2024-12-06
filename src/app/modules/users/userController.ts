@@ -1,4 +1,5 @@
-import httpStatus from 'http-status';
+import httpStatus from 'http-status-codes';
+
 import { NextFunction, Request, RequestHandler, Response } from "express"
 import sendResponse from "../../utils/sendResponse"
 import { userServices } from './userService';
