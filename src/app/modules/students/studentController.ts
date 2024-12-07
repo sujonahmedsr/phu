@@ -5,8 +5,6 @@ import httpStatus from 'http-status-codes';
 
 const getAllStudents = createAsyncFunc(async (req, res) => {
     const result = await studentServices.getAllStudentsFromDb(req.query);
-    console.log(req.query);
-    
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

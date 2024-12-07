@@ -6,18 +6,25 @@ import AppError from "../../utils/AppError";
 import { userModel } from "../users/userSchemModel";
 
 const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
+  // copies all query
+  let queryObj = {...query}
 
+  // search Query 
   let searchTerm = ''
-
   if (query?.searchTerm) {
-    searchTerm = query?.searchTerm as string; 
+    searchTerm = query?.searchTerm as string;
   }
-  
-  const result = await Student.find({
-    $or: ['email', 'name.firstName', 'presentAddress'].map((field) => ({
+  const searchQuery = Student.find({
+    $or: ['email','name.firstName', 'presentAddress'].map((field) => ({
       [field]: { $regex: searchTerm, $options: 'i' },
-   }))
+    }))
   })
+
+  const excludes = ['searchTerm', 'sort', 'limit', 'page', 'fields']
+  excludes.forEach(el => delete queryObj[el])
+
+  const filterQuery = searchQuery
+    .find(queryObj)
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -27,7 +34,36 @@ const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
     });
   ;
 
-  return result;
+  // sorting query 
+  let sort = '-createdAt'
+  if(query?.sort){
+    sort = query.sort as string
+  }
+  const sortQuery = filterQuery.sort(sort)
+
+  // pagination query
+  let limit = 1;
+  let page = 1;
+  let skip = 0
+  if (query?.limit) {
+    limit = Number(query.limit);
+  }
+  if(query?.page){
+    page = Number(query.page)
+    skip = (page - 1) * limit
+  }
+  const pageQuery = sortQuery.skip(skip)
+  const limitQuery = pageQuery.limit(limit)
+
+  // fields query what a front end developer want
+  let fields = ''
+  if(query?.fields){
+    fields = (query?.fields as string)?.split(',')?.join(' ')
+  }
+  const filedQuery = await limitQuery.select(fields)
+  
+  // return all chainging in last with filedQuery
+  return filedQuery;
 };
 
 const getSingleStudentsFromDb = async (id: string) => {
