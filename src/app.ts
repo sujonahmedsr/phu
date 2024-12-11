@@ -7,6 +7,10 @@ import studenRoutes from './app/modules/students/studentRoutes'
 import academicSemesterRoute from './app/modules/academicSemester/academicSemesterRoute'
 import academicFacultyRoute from './app/modules/academicFaculty/academicFacultyRoutes'
 import AcademicDepartmentRoutes from './app/modules/academicDep/academicDepRoutes'
+import FacultyRoutes from './app/modules/Faculty/facultyRoutes'
+import AdminRoutes from './app/modules/Admin/adminRoutes'
+import CourseRoutes from './app/modules/Course/courseRoute'
+import semesterRegistrationRoutes from './app/modules/semesterRegistration/semesterRegRoutes'
 const app: Application = express()
 
 // middlewares 
@@ -19,6 +23,10 @@ app.use('/api/students', studenRoutes)
 app.use('/api/academicSemester', academicSemesterRoute)
 app.use('/api/academicFaculty', academicFacultyRoute)
 app.use('/api/academicDepartment', AcademicDepartmentRoutes)
+app.use('/api/faculties', FacultyRoutes)
+app.use('/api/admins', AdminRoutes)
+app.use('/api/course', CourseRoutes)
+app.use('/api/semesters', semesterRegistrationRoutes)
 
 
 app.get('/', (req: Request, res: Response) => {
