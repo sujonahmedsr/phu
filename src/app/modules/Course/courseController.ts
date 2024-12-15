@@ -1,4 +1,4 @@
-import httpStatus from 'http-status';
+import httpStatus from 'http-status-codes';
 import sendResponse from '../../utils/sendResponse';
 import { CourseServices } from './courseServices';
 import createAsyncFunc from '../../utils/createAsyncFunc';

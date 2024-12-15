@@ -4,6 +4,7 @@ import { FacultyServices } from './facultyServices';
 import createAsyncFunc from '../../utils/createAsyncFunc';
 
 const getSingleFaculty = createAsyncFunc(async (req, res) => {
+  
   const { id } = req.params;
   const result = await FacultyServices.getSingleFacultyFromDB( id );
 

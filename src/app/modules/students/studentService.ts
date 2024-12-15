@@ -69,6 +69,7 @@ const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
   const serrchableFields = ['email', 'name.firstName', 'presentAddress']
 
   const studentQuery = new QueryBuilder(Student.find()
+    .populate('user')
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',
@@ -89,6 +90,7 @@ const getAllStudentsFromDb = async (query: Record<string, unknown>) => {
 
 const getSingleStudentsFromDb = async (id: string) => {
   const result = await Student.findOne({ id })
+    .populate('user')
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',

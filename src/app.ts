@@ -11,10 +11,14 @@ import FacultyRoutes from './app/modules/Faculty/facultyRoutes'
 import AdminRoutes from './app/modules/Admin/adminRoutes'
 import CourseRoutes from './app/modules/Course/courseRoute'
 import semesterRegistrationRoutes from './app/modules/semesterRegistration/semesterRegRoutes'
+import offeredCourseRoutes from './app/modules/OfferedCourse/OfferedCourseRoutes'
+import authRoutes from './app/modules/auth/authRoute'
+import cookieParser from 'cookie-parser'
 const app: Application = express()
 
 // middlewares 
 app.use(express.json())
+app.use(cookieParser())
 app.use(cors())
 
 // create route 
@@ -27,6 +31,8 @@ app.use('/api/faculties', FacultyRoutes)
 app.use('/api/admins', AdminRoutes)
 app.use('/api/course', CourseRoutes)
 app.use('/api/semesters', semesterRegistrationRoutes)
+app.use('/api/offeredCourse', offeredCourseRoutes)
+app.use('/api/auth', authRoutes)
 
 
 app.get('/', (req: Request, res: Response) => {
