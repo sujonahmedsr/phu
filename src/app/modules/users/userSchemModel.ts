@@ -8,6 +8,11 @@ const userSchema = new Schema<tUser, UserModel>({
         required: true,
         unique: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     password: {
         type: String,
         select: 0
@@ -83,10 +88,10 @@ userSchema.statics.isPasswordMatch = async function (
 userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
     passwordChangedTimestamp: Date,
     jwtIssuedTimestamp: number,
-  ) {
+) {
     const passwordChangedTime =
-      new Date(passwordChangedTimestamp).getTime() / 1000;
+        new Date(passwordChangedTimestamp).getTime() / 1000;
     return passwordChangedTime > jwtIssuedTimestamp;
-  };
+};
 
 export const userModel = model<tUser, UserModel>('users', userSchema)

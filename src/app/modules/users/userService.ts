@@ -11,6 +11,7 @@ import { TFaculty } from "../Faculty/facultyInterface";
 import { AcademicDepartment } from "../academicDep/academicDepInSchemaModel";
 import { Faculty } from "../Faculty/facultyScehmaModel";
 import { Admin } from "../Admin/adminSchemaModel";
+import { sendImageToCloudinary } from "../../utils/sendImgToCoudinary";
 
 const def_Pass = process.env.DEF_PASS
 
@@ -23,6 +24,8 @@ const createStudentInToDb = async (password: string, studentData: TStudent) => {
 
     // set role 
     userData.role = 'student'
+    // set email 
+    userData.email = studentData?.email
 
     // admissionSemesterFind with studentData.admissionSemester
     const admissionSemesterFind = await academicSemesterModel.findById(studentData.admissionSemester)
@@ -95,6 +98,8 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 
     //set student role
     userData.role = 'faculty';
+    // set email 
+    userData.email = payload?.email
 
     // find academic department info
     const academicDepartment = await AcademicDepartment.findById(
@@ -145,53 +150,88 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 
 
 
-const createAdminIntoDB = async (password: string, payload: TFaculty) => {
+const createAdminIntoDB = async (file: any, password: string, payload: TFaculty) => {
     // create a user object
     const userData: Partial<tUser> = {};
-  
+
     //if password is not given , use deafult password
     userData.password = password || (def_Pass as string);
-  
+
     //set student role
     userData.role = 'admin';
-  
+    // set email 
+    userData.email = payload?.email
+
     const session = await mongoose.startSession();
-  
+
     try {
-      session.startTransaction();
-      //set  generated id
-      userData.id = await generateAdminId();
-  
-      // create a user (transaction-1)
-      const newUser = await userModel.create([userData], { session }); 
-  
-      //create a admin
-      if (!newUser.length) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create admin');
-      }
-      // set id , _id as user
-      payload.id = newUser[0].id;
-      payload.user = newUser[0]._id; //reference _id
-  
-      // create a admin (transaction-2)
-      const newAdmin = await Admin.create([payload], { session });
-  
-      if (!newAdmin.length) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create admin');
-      }
-  
-      await session.commitTransaction();
-      await session.endSession();
-  
-      return newAdmin;
+        session.startTransaction();
+        //set  generated id
+        userData.id = await generateAdminId();
+        const imageName = `${userData?.id}_${payload?.name?.firstName}`
+        const path = file?.path
+
+        const response = await sendImageToCloudinary(imageName, path);
+        const secureUrl = response?.secure_url;
+
+        // create a user (transaction-1)
+        const newUser = await userModel.create([userData], { session });
+
+        //create a admin
+        if (!newUser.length) {
+            throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create admin');
+        }
+        // set id , _id as user
+        payload.id = newUser[0].id;
+        payload.user = newUser[0]._id; //reference _id
+        payload.profileImg = secureUrl; 
+
+        // create a admin (transaction-2)
+        const newAdmin = await Admin.create([payload], { session });
+
+        if (!newAdmin.length) {
+            throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create admin');
+        }
+
+        await session.commitTransaction();
+        await session.endSession();
+
+        return newAdmin;
     } catch (err: any) {
-      await session.abortTransaction();
-      await session.endSession();
-      throw new Error(err);
+        await session.abortTransaction();
+        await session.endSession();
+        throw new Error(err);
     }
-  };
+};
+
+const getMe = async (userId: string, role: string) => {
+
+    let result = null;
+    if (role === 'student') {
+        result = await Student.findOne({ id: userId }).populate('user');
+    }
+    if (role === 'admin') {
+        result = await Admin.findOne({ id: userId }).populate('user');
+    }
+
+    if (role === 'faculty') {
+        result = await Faculty.findOne({ id: userId }).populate('user');
+    }
+
+    return result;
+};
+
+const changeStatus = async (id: string, payload: { status: string }) => {
+    const result = await userModel.findByIdAndUpdate(id, payload, {
+        new: true,
+    });
+    return result;
+};
+
 export const userServices = {
     createStudentInToDb,
     createFacultyIntoDB,
-    createAdminIntoDB
+    createAdminIntoDB,
+    getMe,
+    changeStatus
 }

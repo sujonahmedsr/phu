@@ -42,13 +42,37 @@ const refreshToken = createAsyncFunc(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Access token is retrieved succesfully!',
+    message: 'Refresh token is retrieved succesfully!',
     data: result,
   });
 });
+
+const forgetPassword = createAsyncFunc(async (req, res) =>{
+  const userId = req.body.id
+  const result = await AuthServices.forgetPasswordDb(userId)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Reset link is generated succesfully!',
+    data: result,
+  });
+})
+
+const resetPassword = createAsyncFunc(async (req, res) =>{
+  const token = req.headers.authorization as string;
+  const result = await AuthServices.resetPassword(req.body, token)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password reset succesful!',
+    data: result,
+  });
+})
 
 export const AuthControllers = {
   loginUser,
   changePassword,
   refreshToken,
+  forgetPassword,
+  resetPassword
 };

@@ -35,7 +35,7 @@ const createFaculty = createAsyncFunc(async (req, res) => {
 const createAdmin = createAsyncFunc(async (req, res) => {
   const { password, admin: adminData } = req.body;
 
-  const result = await userServices.createAdminIntoDB(password, adminData);
+  const result = await userServices.createAdminIntoDB(req.file ,password, adminData);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -45,8 +45,32 @@ const createAdmin = createAsyncFunc(async (req, res) => {
   });
 });
 
+const getMe = createAsyncFunc(async (req, res) => {
+  const { userId, role } = req.user;
+  const result = await userServices.getMe(userId, role);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User is retrieved succesfully',
+    data: result,
+  });
+});
+
+const changeStatus = createAsyncFunc(async (req, res) => {
+  const id = req.params.id;
+  const result = await userServices.changeStatus(id, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Status is updated succesfully',
+    data: result,
+  });
+});
+
 export const userControllers = {
   createStudent,
   createFaculty,
-  createAdmin
+  createAdmin,
+  getMe,
+  changeStatus
 }

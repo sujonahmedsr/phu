@@ -10,4 +10,5 @@ const notFound = (req: Request, res: Response): void => {
   });
 };
 
+
 export default notFound;
