@@ -14,6 +14,7 @@ import semesterRegistrationRoutes from './app/modules/semesterRegistration/semes
 import offeredCourseRoutes from './app/modules/OfferedCourse/OfferedCourseRoutes'
 import authRoutes from './app/modules/auth/authRoute'
 import cookieParser from 'cookie-parser'
+import { EnrolledCourseRoutes } from './app/modules/EnrolledCourse/enrolledCourse.route'
 const app: Application = express()
 
 // middlewares 
@@ -33,6 +34,7 @@ app.use('/api/course', CourseRoutes)
 app.use('/api/semesters', semesterRegistrationRoutes)
 app.use('/api/offeredCourse', offeredCourseRoutes)
 app.use('/api/auth', authRoutes)
+app.use('/api/enrolled-courses', EnrolledCourseRoutes)
 
 
 app.get('/', (req: Request, res: Response) => {
